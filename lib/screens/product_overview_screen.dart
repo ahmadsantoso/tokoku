@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import 'package:tokoku/screens/cart_screen.dart';
+import 'package:tokoku/widgets/app_drawer.dart';
 
 import '../providers/cart.dart';
 import '../widgets/products_grid.dart';
@@ -34,7 +35,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                 }
               });
             },
-            icon: Icon(Icons.more_vert),
+            icon: Icon(Icons.sort),
             itemBuilder: (_) => [
               PopupMenuItem(
                   child: Text('Only Favorites'),
@@ -64,6 +65,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ),
         ],
       ),
+      drawer: AppDrawer(),
       body: ProductsGrid(_showFavoritesOnly),
     );
   }

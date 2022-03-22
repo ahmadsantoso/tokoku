@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tokoku/providers/cart.dart';
-import 'package:tokoku/providers/product.dart';
-import 'package:tokoku/screens/cart_screen.dart';
 
+import './providers/cart.dart';
+import './providers/products.dart';
+import './providers/orders.dart';
+
+import './screens/cart_screen.dart';
+import './screens/orders_screen.dart';
 import './screens/product_overview_screen.dart';
 import './screens/product_detail_screen.dart';
-import './providers/products.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,6 +27,10 @@ class MyApp extends StatelessWidget {
           // create: (ctx) => Cart(),
           value: Cart(),
         ),
+        ChangeNotifierProvider.value(
+          // create: (ctx) => Orders(),
+          value: Orders(),
+        ),
       ],
       child: MaterialApp(
         title: 'Tokoku',
@@ -35,6 +41,7 @@ class MyApp extends StatelessWidget {
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
+          OrdersScreen.routeName: (ctx) => OrdersScreen(),
         },
       ),
     );
