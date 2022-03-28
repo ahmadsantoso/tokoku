@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tokoku/providers/auth.dart';
+import 'package:tokoku/screens/auth_screen.dart';
 import 'package:tokoku/screens/edit_product_screen.dart';
 import 'package:tokoku/screens/user_products_screen.dart';
 
@@ -22,6 +24,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
+          // create: (ctx) => Auth(),
+          value: Auth(),
+        ),
+        ChangeNotifierProvider.value(
           // create: (ctx) => Products(),
           value: Products(),
         ),
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: ProductOverviewScreen(),
+        home: AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
