@@ -41,6 +41,11 @@ class Products with ChangeNotifier {
     //         'https://images.tokopedia.net/img/cache/200-square/hDjmkQ/2022/2/27/36310807-061e-4a95-b8e0-a1dd35344d21.jpg.webp?ect=4g'),
   ];
 
+  final String authToken;
+  final String userId;
+
+  Products(this.authToken, this.userId, this._items);
+
   List<Product> get items {
     // if (_showFavoritesOnly) {
     //   return _items.where((prodItem) => prodItem.isFavorite).toList();
@@ -67,8 +72,8 @@ class Products with ChangeNotifier {
   // }
 
   Future<void> fetchData() async {
-    final url = Uri.parse(
-        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
+    var url = Uri.parse(
+        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
     try {
       final response = await http.get(url);
       // print(json.decode(response.body));
@@ -76,6 +81,10 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+      url = Uri.parse(
+          'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/userFavorites/$userId.json?auth=$authToken');
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(
@@ -85,7 +94,8 @@ class Products with ChangeNotifier {
             description: prodData['description'],
             price: prodData['price'],
             imageUrl: prodData['imageUrl'],
-            isFavorite: prodData['isFavorite'],
+            isFavorite:
+                favoriteData == null ? false : favoriteData[prodId] ?? false,
           ),
         );
       });
@@ -102,7 +112,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     final url = Uri.https(
         'tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products.json');
+        '/products.json/auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -134,7 +144,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url = Uri.parse(
-          'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+          'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken');
       await http.patch(
         url,
         body: json.encode({
@@ -142,7 +152,6 @@ class Products with ChangeNotifier {
           'description': newProduct.description,
           'imageUrl': newProduct.imageUrl,
           'price': newProduct.price,
-          'isFavorite': newProduct.isFavorite,
         }),
       );
 
@@ -155,7 +164,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url = Uri.parse(
-        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken');
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     Product? existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
