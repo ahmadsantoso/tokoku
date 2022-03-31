@@ -112,6 +112,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
+        print(error);
       }
       // finally {
       //   setState(() {

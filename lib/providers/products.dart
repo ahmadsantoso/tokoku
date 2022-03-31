@@ -41,8 +41,8 @@ class Products with ChangeNotifier {
     //         'https://images.tokopedia.net/img/cache/200-square/hDjmkQ/2022/2/27/36310807-061e-4a95-b8e0-a1dd35344d21.jpg.webp?ect=4g'),
   ];
 
-  final String authToken;
-  final String userId;
+  final String? authToken;
+  final String? userId;
 
   Products(this.authToken, this.userId, this._items);
 
@@ -71,14 +71,16 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchData() async {
+  Future<void> fetchData([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse(
-        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
+        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken&$filterString');
     try {
       final response = await http.get(url);
       // print(json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if (extractedData == null) {
+      if (extractedData == null || extractedData['error'] != null) {
         return;
       }
       url = Uri.parse(
@@ -110,9 +112,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = Uri.https(
-        'tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products.json/auth=$authToken');
+    final url = Uri.parse(
+        'https://tokoku-6bf28-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -121,7 +122,7 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          'creatorId': userId,
         }),
       );
       final newProduct = Product(
